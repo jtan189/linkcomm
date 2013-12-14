@@ -332,6 +332,12 @@ void getEdgeSimilarities(int *ea, int *eb, int *numedg, int *rowlen, double *wei
 				numerat = neighbA.size() + neighbB.size() - 2*common.size();
 				denom = neighbA.size() + neighbB.size() - common.size();
 				distm = numerat/denom;
+				
+				// TODO: implement changes here
+				dist_alpha = 0.25;
+				// attr_dist = ?
+				distm = dist_alpha * distm + (1 - dist_alpha) * attr_dist;
+				
 
 				if(*disk){
 					row.at(inds.at(j)-i-1) = distm;
