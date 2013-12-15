@@ -21,6 +21,10 @@
 #include <map>
 #include <numeric>
 
+// bitset support
+#include <string> 
+#include <bitset> 
+
 extern "C" {
 #include <R.h>
 
@@ -157,7 +161,7 @@ void getDirectedWeights(map<int,float> &dW, set<int> &comm, vector<int> &eA, vec
 
 
 
-void getEdgeSimilarities(int *ea, int *eb, int *numedg, int *rowlen, double *weights, bool *directed, double *dirweight, bool *weighted, bool *disk, double *dissvec, bool *bipartite, bool *verbose)
+    void getEdgeSimilarities(int *ea, int *eb, int *numedg, int *rowlen, double *weights, bool *directed, double *dirweight, bool *weighted, bool *disk, double *dissvec, bool *bipartite, bool *verbose, bool *edgeattributed, char edgeattr[])
 
 	{
 
@@ -189,6 +193,11 @@ void getEdgeSimilarities(int *ea, int *eb, int *numedg, int *rowlen, double *wei
 	map<int,float> dirWeights;
 	vector<double> aI;
 	vector<double> aJ;
+	bitset<20> attrA;
+	bitset<20> attrB;
+	size_t numAttrBoth;
+	size_t numAttrEither;
+	double attr_dist;
 
 	copy(ea, ea + *numedg, back_inserter(edgeA));
 	copy(eb, eb + *numedg, back_inserter(edgeB));
@@ -333,11 +342,15 @@ void getEdgeSimilarities(int *ea, int *eb, int *numedg, int *rowlen, double *wei
 				denom = neighbA.size() + neighbB.size() - common.size();
 				distm = numerat/denom;
 				
-				// TODO: implement changes here
-				dist_alpha = 0.25;
-				// attr_dist = ?
-				distm = dist_alpha * distm + (1 - dist_alpha) * attr_dist;
+				attrA (string(edgeAttr[nonshared.at(0)]));
+				attrB (string(edgeAttr[nonshared.at(1)]));
 				
+				numAttrBoth = (attrA&=attrB).count();
+				numAttrEither = (attrA|=attrB).count();
+				attr_dist = (double) numAttrBoth / (double) numAttrEither;
+
+				dist_alpha = 0.25; // TODO: set via function parameter
+				distm = dist_alpha * distm + (1 - dist_alpha) * attr_dist;
 
 				if(*disk){
 					row.at(inds.at(j)-i-1) = distm;
