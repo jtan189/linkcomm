@@ -80,7 +80,7 @@ edge.duplicates <- function(network, verbose = TRUE)
 	}
 
 
-getLinkCommunities <- function(network, hcmethod = "average", use.all.edges = FALSE, edglim = 10^4, directed = FALSE, dirweight = 0.5, bipartite = FALSE, dist = NULL, plot = TRUE, check.duplicates = TRUE, removetrivial = TRUE, verbose = TRUE) 
+getLinkCommunities <- function(network, hcmethod = "average", use.all.edges = FALSE, edglim = 10^4, directed = FALSE, dirweight = 0.5, bipartite = FALSE, dist = NULL, plot = TRUE, check.duplicates = TRUE, removetrivial = TRUE, verbose = TRUE, use.edge.attr = FALSE, edgeattribs = NULL) 
 	# network is an edge list. Nodes can be ASCII names or integers, but are always treated as character names in R.
 	# If plot is true (default), a dendrogram and partition density score as a function of dendrogram height are plotted side-by-side.
 	# When there are more than "edglim" edges, hierarchical clustering is carried out via temporary files written to disk using compiled C++ code.
@@ -109,12 +109,26 @@ getLinkCommunities <- function(network, hcmethod = "average", use.all.edges = FA
 		stop("\ninput data must be an edge list with 2 or 3 columns\n")
 		}
 
+        if(use.edge.attr){
+            if(is.character(edgeattribs) && !is.matrix(edgeattribs)){
+		if(file.access(edgeattribs) == -1){
+                    stop(cat("\nfile not found: \"",edgeattribs,"\"\n",sep=""))
+		}else{
+                    edgeattribs <- read.table(file = edgeattribs, header = FALSE)
+                }
+            }
+
 	if(check.duplicates){
 		dret <- edge.duplicates(x, verbose = verbose)
 		x <- dret$edges
 		if(!is.null(wt)){
 			if(length(dret$inds) > 0){
 				wt <- wt[-dret$inds]
+				}
+			}
+                if(!is.null(edgeattribs)){
+			if(length(dret$inds) > 0){
+				edgeattribs <- edgeattribs[-dret$inds]
 				}
 			}
 		rm(dret)
@@ -154,10 +168,11 @@ getLinkCommunities <- function(network, hcmethod = "average", use.all.edges = FA
 		if(is.null(dist)){
 			emptyvec <- rep(1,(len*(len-1))/2)
 			if(!is.null(wt)){ weighted <- TRUE}else{ wt <- 0; weighted <- FALSE}
+                        if(!is.null(edgeattribs)){ edge.attributed <- TRUE}else{ edgeattribs <- 0; edgeattributed <- FALSE}
 			if(!use.all.edges){
-				dissvec <- .C("getEdgeSimilarities",as.integer(edges[,1]),as.integer(edges[,2]),as.integer(len),rowlen=integer(1),weights=as.double(wt),as.logical(directed),as.double(dirweight),as.logical(weighted),as.logical(disk), dissvec = as.double(emptyvec), as.logical(bipartite), as.logical(verbose))$dissvec
+				dissvec <- .C("getEdgeSimilarities",as.integer(edges[,1]),as.integer(edges[,2]),as.integer(len),rowlen=integer(1),weights=as.double(wt),as.logical(directed),as.double(dirweight),as.logical(weighted),as.logical(disk), as.logical(edgeattributed), attribs=edgeattribs, dissvec = as.double(emptyvec), as.logical(bipartite), as.logical(verbose),)$dissvec
 			}else{
-				dissvec <- .C("getEdgeSimilarities_all",as.integer(edges[,1]),as.integer(edges[,2]),as.integer(len),as.integer(numnodes),rowlen=integer(1),weights=as.double(wt),as.logical(FALSE),as.double(dirweight),as.logical(weighted),as.logical(disk), dissvec = as.double(emptyvec), as.logical(bipartite), as.logical(verbose))$dissvec
+				dissvec <- .C("getEdgeSimilarities_all",as.integer(edges[,1]),as.integer(edges[,2]),as.integer(len),as.integer(numnodes),rowlen=integer(1),weights=as.double(wt),as.logical(FALSE),as.double(dirweight),as.logical(weighted),as.logical(disk), as.logical(edgeattributed), attribs=edgeattribs, dissvec = as.double(emptyvec), as.logical(bipartite), as.logical(verbose))$dissvec
 				}
 			distmatrix <- matrix(1,len,len)
 			distmatrix[lower.tri(distmatrix)] <- dissvec
@@ -192,9 +207,9 @@ getLinkCommunities <- function(network, hcmethod = "average", use.all.edges = FA
 		disk <- TRUE
 		if(!is.null(wt)){ weighted <- TRUE}else{ wt <- 0; weighted <- FALSE}
 		if(!use.all.edges){
-			rowlen <- .C("getEdgeSimilarities",as.integer(edges[,1]),as.integer(edges[,2]),as.integer(len),rowlen=integer(len-1),weights=as.double(wt),as.logical(directed),as.double(dirweight),as.logical(weighted),as.logical(disk), dissvec = double(1), as.logical(bipartite), as.logical(verbose))$rowlen
+			rowlen <- .C("getEdgeSimilarities",as.integer(edges[,1]),as.integer(edges[,2]),as.integer(len),rowlen=integer(len-1),weights=as.double(wt),as.logical(directed),as.double(dirweight),as.logical(weighted),as.logical(disk), as.logical(edgeattributed), attribs=edgeattribs, dissvec = double(1), as.logical(bipartite), as.logical(verbose))$rowlen
 		}else{
-			rowlen <- .C("getEdgeSimilarities_all",as.integer(edges[,1]),as.integer(edges[,2]),as.integer(len),as.integer(numnodes),rowlen=integer(len-1),weights=as.double(wt),as.logical(FALSE),as.double(dirweight),as.logical(weighted),as.logical(disk), dissvec = double(1), as.logical(bipartite), as.logical(verbose))$rowlen
+			rowlen <- .C("getEdgeSimilarities_all",as.integer(edges[,1]),as.integer(edges[,2]),as.integer(len),as.integer(numnodes),rowlen=integer(len-1),weights=as.double(wt),as.logical(FALSE),as.double(dirweight),as.logical(weighted),as.logical(disk), edgeattributed, attribs=as.double(edgeattribs), dissvec = double(1), as.logical(bipartite), as.logical(verbose))$rowlen
 			}
 		if(verbose){cat("\n")}
 		hcobj <- .C("hclustLinkComm",as.integer(len),as.integer(rowlen),heights = single(len-1),hca = integer(len-1),hcb = integer(len-1), as.logical(verbose))
@@ -345,6 +360,3 @@ getLinkCommunities <- function(network, hcmethod = "average", use.all.edges = FA
 	return(all)
 	
 	}
-
-
-
