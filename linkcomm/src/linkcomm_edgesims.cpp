@@ -341,39 +341,33 @@ void getDirectedWeights(map<int,float> &dW, set<int> &comm, vector<int> &eA, vec
 				numerat = neighbA.size() + neighbB.size() - 2*common.size();
 				denom = neighbA.size() + neighbB.size() - common.size();
 				distm = numerat/denom;
-				
-				string a_attr_string (&(edgeattr[nonshared.at(0)]));
-				string b_attr_string (&(edgeattr[nonshared.at(1)]));
-				// attrA (edgeattr[nonshared.at(0)]);
-				// attrB (stringedgeattr[nonshared.at(1)]);
-				//attrA (*(edgeattr[nonshared.at(0)]));
-				//attrB (*(edgeattr[nonshared.at(0)]));
-				//attrA ("001");
-				//attrB ("q01");
-				//attrA (a_attr_string.data());
-				//attrB (b_attr_string.data());
 
-				for(string::size_type attrib_i = 0; i < a_attr_string.size(); ++i) {
-				    if (a_attr_string[attrib_i] == '1') {
-					if (a_attr_string[attrib_i] == b_attr_string[attrib_i]) {
-					    numAttrBoth++;
-					} else {
-					    numAttrEither++;
-					}
+				if (*edgeattributed) {
+				    string a_attr_string (&(edgeattr[nonshared.at(0)]));
+				    string b_attr_string (&(edgeattr[nonshared.at(1)]));
+
+				    for(string::size_type attrib_i = 0; i < a_attr_string.size(); ++i) {
+					if (a_attr_string[attrib_i] == '1') {
+					    if (a_attr_string[attrib_i] == b_attr_string[attrib_i]) {
+						numAttrBoth++;
+					    } else {
+						numAttrEither++;
+					    }
 					    
-				    } else {
-					if (b_attr_string[attrib_i] == '1') {
-					    numAttrEither++;
+					} else {
+					    if (b_attr_string[attrib_i] == '1') {
+						numAttrEither++;
+					    }
 					}
 				    }
-				}
 				
-				numAttrBoth = (attrA&=attrB).count();
-				numAttrEither = (attrA|=attrB).count();
-				attr_dist = (double) numAttrBoth / (double) numAttrEither;
+				    numAttrBoth = (attrA&=attrB).count();
+				    numAttrEither = (attrA|=attrB).count();
+				    attr_dist = (double) numAttrBoth / (double) numAttrEither;
 
-				dist_alpha = 0.25; // TODO: set via function parameter
-				distm = dist_alpha * distm + (1 - dist_alpha) * attr_dist;
+				    dist_alpha = 0.25; // TODO: set via function parameter
+				    distm = dist_alpha * distm + (1 - dist_alpha) * attr_dist;
+				}
 
 				if(*disk){
 					row.at(inds.at(j)-i-1) = distm;

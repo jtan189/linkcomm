@@ -2,7 +2,7 @@ Package: linkcomm
 Type: Package
 Title: Tools for Generating, Visualizing, and Analysing Link
         Communities in Networks
-Version: 1.0-7
+Version: 1.0-7.1
 Date: 2011-05-27
 Author: Alex T. Kalinka <alex.t.kalinka@gmail.com>, with contributions
         from Alain Guenoche
