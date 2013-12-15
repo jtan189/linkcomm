@@ -167,7 +167,7 @@ void getDirectedWeights(map<int,float> &dW, set<int> &comm, vector<int> &eA, vec
 
 	int i, j, finda, findab, findb, findba, add, which, perc = 0;
 	int first = -1, last = -1, sum = 0, runn = 0;
-	double dotprod, absA, absB, numerat, denom, distm;
+	double dotprod, absA, absB, numerat, denom, distm, dist_alpha;
 	float prog;
 	bool end = FALSE;
 	vector<double> row;
@@ -342,8 +342,31 @@ void getDirectedWeights(map<int,float> &dW, set<int> &comm, vector<int> &eA, vec
 				denom = neighbA.size() + neighbB.size() - common.size();
 				distm = numerat/denom;
 				
-				attrA (string(edgeAttr[nonshared.at(0)]));
-				attrB (string(edgeAttr[nonshared.at(1)]));
+				string a_attr_string (&(edgeattr[nonshared.at(0)]));
+				string b_attr_string (&(edgeattr[nonshared.at(1)]));
+				// attrA (edgeattr[nonshared.at(0)]);
+				// attrB (stringedgeattr[nonshared.at(1)]);
+				//attrA (*(edgeattr[nonshared.at(0)]));
+				//attrB (*(edgeattr[nonshared.at(0)]));
+				//attrA ("001");
+				//attrB ("q01");
+				//attrA (a_attr_string.data());
+				//attrB (b_attr_string.data());
+
+				for(string::size_type attrib_i = 0; i < a_attr_string.size(); ++i) {
+				    if (a_attr_string[attrib_i] == '1') {
+					if (a_attr_string[attrib_i] == b_attr_string[attrib_i]) {
+					    numAttrBoth++;
+					} else {
+					    numAttrEither++;
+					}
+					    
+				    } else {
+					if (b_attr_string[attrib_i] == '1') {
+					    numAttrEither++;
+					}
+				    }
+				}
 				
 				numAttrBoth = (attrA&=attrB).count();
 				numAttrEither = (attrA|=attrB).count();
