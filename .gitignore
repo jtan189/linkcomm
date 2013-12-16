@@ -1,5 +1,6 @@
 # History files
 .Rhistory
+.RData
 
 # Example code in package build process
 *-Ex.R
@@ -9,3 +10,4 @@ linkcomm/src/*.o
 linkcomm/src/*.rds
 linkcomm/src/*.so
 linkcomm_diss.txt
+linkcomm_diss

@@ -160,7 +160,8 @@ void getDirectedWeights(map<int,float> &dW, set<int> &comm, vector<int> &eA, vec
 
 
 
-    void getEdgeSimilarities(int *ea, int *eb, int *numedg, int *rowlen, double *weights, bool *directed, double *dirweight, bool *weighted, bool *disk, double *dissvec, bool *bipartite, bool *verbose, bool *edgeattributed, char edgeattr[])
+    void getEdgeSimilarities(int *ea, int *eb, int *numedg, int *rowlen, double *weights, bool *directed, double *dirweight, bool *weighted, bool *disk, double *dissvec, bool *
+bipartite, bool *verbose, bool *edgeattributed, char *edgeattr)
 
 	{
 
