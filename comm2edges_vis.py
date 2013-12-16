@@ -114,7 +114,7 @@ def p(graph):
     ig.plot(graph, layout=graph.layout('fruchterman_reingold'),
             target='graph.png', vertex_label="", edge_width=0.3)
     #ig.plot(graph, layout=graph.layout('kamada_kawai'), target='graph.png')
-    subprocess.Popen(['feh', 'graph.png'])
+    #subprocess.Popen(['feh', 'graph.png'])
 
 def test():
     colors = dict(enumerate(("blue", "green", "orange", "yellow", "black", "pink")))
