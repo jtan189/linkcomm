@@ -21,9 +21,8 @@
 #include <map>
 #include <numeric>
 
-// bitset support
 #include <string> 
-#include <bitset> 
+
 
 extern "C" {
 #include <R.h>
@@ -193,8 +192,6 @@ void getDirectedWeights(map<int,float> &dW, set<int> &comm, vector<int> &eA, vec
 	map<int,float> dirWeights;
 	vector<double> aI;
 	vector<double> aJ;
-	bitset<20> attrA;
-	bitset<20> attrB;
 	size_t numAttrBoth;
 	size_t numAttrEither;
 	double attr_dist;
@@ -343,30 +340,32 @@ void getDirectedWeights(map<int,float> &dW, set<int> &comm, vector<int> &eA, vec
 				distm = numerat/denom;
 
 				if (*edgeattributed) {
+
 				    string a_attr_string (&(edgeattr[nonshared.at(0)]));
 				    string b_attr_string (&(edgeattr[nonshared.at(1)]));
+				    numAttrBoth = 0;
+				    numAttrEither = 0;
 
-				    for(string::size_type attrib_i = 0; i < a_attr_string.size(); ++i) {
+				    for(string::size_type attrib_i = 0; attrib_i < a_attr_string.size(); ++attrib_i) {
 					if (a_attr_string[attrib_i] == '1') {
 					    if (a_attr_string[attrib_i] == b_attr_string[attrib_i]) {
 						numAttrBoth++;
+						numAttrEither++;
 					    } else {
 						numAttrEither++;
 					    }
-					    
 					} else {
 					    if (b_attr_string[attrib_i] == '1') {
 						numAttrEither++;
 					    }
 					}
 				    }
-				
-				    numAttrBoth = (attrA&=attrB).count();
-				    numAttrEither = (attrA|=attrB).count();
+
 				    attr_dist = (double) numAttrBoth / (double) numAttrEither;
 
 				    dist_alpha = 0.25; // TODO: set via function parameter
 				    distm = dist_alpha * distm + (1 - dist_alpha) * attr_dist;
+
 				}
 
 				if(*disk){
