@@ -114,7 +114,7 @@ def p(graph):
     ig.plot(graph, layout=graph.layout('fruchterman_reingold'),
             target='graph.png', vertex_label="", edge_width=0.3)
     #ig.plot(graph, layout=graph.layout('kamada_kawai'), target='graph.png')
-    subprocess.Popen(['xv', 'graph.png'])
+    subprocess.Popen(['feh', 'graph.png'])
 
 def test():
     colors = dict(enumerate(("blue", "green", "orange", "yellow", "black", "pink")))
@@ -152,14 +152,14 @@ def visualize(fin, k=5):
     return graph
 
 def main():
-    graph = visualize(sys.stdin, 5)
+    #graph = visualize(sys.stdin, 5)
     #graph = visualize(open('cpp/karate_maxS0.333333_maxD0.284758.comm2edges.txt') , 5)
     #graph = visualize(open('cpp/lesmis_maxS0.333333_maxD0.574285.comm2edges.txt') , 1)
+    graph = visualize(open('ExampleDatasets/AuthorMapClean2_maxS0.296296_maxD0.250268.comm2edges.txt'))
     p(graph)
-
+    #test()
     #ig.plot(graph, layout=graph.layout_fruchterman_reingold())
     #graph.write_edgelist(sys.stdout)
     return 0
-
 
 if __name__ == '__main__': main()
