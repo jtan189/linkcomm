@@ -113,15 +113,16 @@ def p(graph):
     #
     #print("pagerank", graph.pagerank())
     ## Looks like per-edge attributes aren't working?
-    ig.plot(graph, layout=graph.layout('fruchterman_reingold'),
-            target='graph.png', vertex_label="", edge_width=0.3)
+    ig.plot(graph, layout=graph.layout('kk'),
+            target='graph.png', vertex_label="",
+            edge_width=0.3)
     #ig.plot(graph, layout=graph.layout('grid_fr'),
     #        target='graph.png', vertex_label="", edge_width=0.3)
     #ig.plot(graph, layout=graph.layout('kamada_kawai'), target='graph.png')
-    #subprocess.Popen(['feh', 'graph.png'])
+    subprocess.Popen(['feh', 'graph.png'])
 
 def test():
-    colors = dict(enumerate(("blue", "green", "orange", "yellow", "black", "pink")))
+    colors = dict(enumerate(("blue", "green", "orange", "purple", "black", "pink")))
     graph = ig.Graph.Full(9)
     graph2 = ig.Graph.Full(7)
     graph.es['color'] = ['green'] * graph.ecount()
@@ -134,18 +135,19 @@ def test():
     p(g)
     #graph.write_edgelist(sys.stdout)
 
-def visualize(fin, k=5):
+def visualize(fin, d, k=5):
     comm = sorted(read_comm2edges(fin), reverse=True)
     el = sorted(reduce(lambda x,y: (x[0], x[1]+y[1]), comm)[1])
     #comm = sorted([(4,[(1,2),(0,3),(0,4)]), (1, [(2,3)])], reverse=True)
-    colors = it.cycle(("blue", "green", "orange", "yellow", "pink", "black"))
+    colors = it.cycle(("blue", "green", "orange", "red", "pink", "black"))
     graph = ig.Graph(edges = el)#, edge_attrs = {'color': list(it.repeat("red", len(el))), 'edge_width': list(it.repeat(1, len(el))), })
     graph.es['name'] = [None] * graph.ecount()
+    graph.vs['label'] = d
     for c in reversed(comm[:k]):
         color = colors.next()
         el = graph.es([i for i,x in enumerate(graph.es) if x.tuple in c[1]])
         vl = graph.vs(set([item for sublist in el for item in sublist.tuple]))
-        el['color'] = [color] * len(el)
+        #el['color'] = [c] * len(el)
         vl['color'] = [color] * len(vl)
         el['edge_width'] = [3] * len(el)
 
@@ -159,7 +161,13 @@ def main():
     #graph = visualize(sys.stdin, 5)
     #graph = visualize(open('cpp/karate_maxS0.333333_maxD0.284758.comm2edges.txt') , 5)
     #graph = visualize(open('cpp/lesmis_maxS0.333333_maxD0.574285.comm2edges.txt') , 1)
-    graph = visualize(open(sys.argv[1]))
+    d = []
+    with open(sys.argv[2]) as f:
+        for line in f:
+            tok = line.split()
+            d.append(tok[1])
+
+    graph = visualize(open(sys.argv[1]), d, 3)
     p(graph)
     #test()
     #ig.plot(graph, layout=graph.layout_fruchterman_reingold())
