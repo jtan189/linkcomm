@@ -110,9 +110,13 @@ def read_comm2edges(fin):
     return comm
 
 def p(graph):
+    #
+    #print("pagerank", graph.pagerank())
     ## Looks like per-edge attributes aren't working?
     ig.plot(graph, layout=graph.layout('fruchterman_reingold'),
             target='graph.png', vertex_label="", edge_width=0.3)
+    #ig.plot(graph, layout=graph.layout('grid_fr'),
+    #        target='graph.png', vertex_label="", edge_width=0.3)
     #ig.plot(graph, layout=graph.layout('kamada_kawai'), target='graph.png')
     #subprocess.Popen(['feh', 'graph.png'])
 
@@ -155,7 +159,7 @@ def main():
     #graph = visualize(sys.stdin, 5)
     #graph = visualize(open('cpp/karate_maxS0.333333_maxD0.284758.comm2edges.txt') , 5)
     #graph = visualize(open('cpp/lesmis_maxS0.333333_maxD0.574285.comm2edges.txt') , 1)
-    graph = visualize(open('ExampleDatasets/AuthorMapClean2_maxS0.296296_maxD0.250268.comm2edges.txt'))
+    graph = visualize(open(sys.argv[1]))
     p(graph)
     #test()
     #ig.plot(graph, layout=graph.layout_fruchterman_reingold())
