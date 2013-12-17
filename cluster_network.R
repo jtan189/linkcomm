@@ -1,7 +1,7 @@
 ## parameters
 alpha = 0.25
-save.img = FALSE
-use.edge.attr = TRUE
+save.img = TRUE
+use.edge.attr = FALSE
 
 ## data input variables
 
@@ -79,7 +79,7 @@ if (use.edge.attr) {
 ## show various graphs/plots
 invisible(readline(prompt = "\nPress [enter] to get link communities for the network."))
 if (save.img) {
-    png(filename="lc.png")
+    png(filename=paste("lc_", alpha, ".png", sep=""))
     if (use.edge.attr) {
         lc <- getLinkCommunities(graph, hcmethod = "average", dist = dist.comb, plot = TRUE, verbose = TRUE)
     } else {
@@ -99,7 +99,7 @@ print(lc)
 
 invisible(readline(prompt = "\nPress [enter] to display community membership for the top 20 nodes that belong to the most communities."))
 if (save.img) {
-    png(filename="top20.png")
+    png(filename=paste("top20_", alpha, ".png", sep=""))
     plot(lc, type = "members")
     dev.off()
 } else {
@@ -108,7 +108,7 @@ if (save.img) {
 
 invisible(readline(prompt = "\nPress [enter] to display network with edges coloured according to community membership."))
 if (save.img) {
-    png(filename="edge_comm.png")
+    png(filename=paste("edge_comm_", alpha, ".png", sep=""))
     plot(lc, type = "graph")
     dev.off()
 } else {
@@ -122,7 +122,7 @@ getNestedHierarchies(lc, clusid = 1, plot = TRUE)
 
 invisible(readline(prompt = "\nPress [enter] to plot the network with a Spencer circle layout."))
 if (save.img) {
-    png(filename="spencer.png")
+    png(filename=paste("spencer_", alpha, ".png", sep=""))
     plot(lc, type = "graph", layout="spencer.circle")
     dev.off()
 } else {
@@ -132,7 +132,7 @@ if (save.img) {
 if (length(lc$clusters) > 1) {
     invisible(readline(prompt = "\nPress [enter] to plot Spencer circle for the top-connected node."))
     if (save.img) {
-        png(filename="spencer_top.png")
+        png(filename=paste("spencertop_", alpha, ".png", sep=""))
         plot(lc, type = "graph", nodes = "YML007W", layout="spencer.circle", vertex.label.cex=0.8, jitter = 0.2)
         dev.off()
     } else {
@@ -142,7 +142,7 @@ if (length(lc$clusters) > 1) {
 
 invisible(readline(prompt = "\nPress [enter] to display the top modular networks."))
 if (save.img) {
-    png(filename="top_modular.png")
+    png(filename=paste("topmod_", alpha, ".png", sep=""))
     plot(lc, type = "commsumm", summary = "mod")
     dev.off()
 } else {
