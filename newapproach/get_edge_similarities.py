@@ -134,7 +134,6 @@ Output:
     basename = os.path.splitext(args[0])[0]
     adj,edges = read_edgelist(args[0], delimiter=delimiter)
     
-    # test
     if very_verbose:
         verbose = True
         ue = set([e for (e, _) in edges]) | set([e for (_, e) in edges])
