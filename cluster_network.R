@@ -59,7 +59,28 @@ dist.comb <- as.dist(dist.comb)
 cat("dist dist\n")
 print(dist.comb)
 
-## get link communites
-linkcomm.summary <- getLinkCommunities(graph, hcmethod = "average", edglim = 10^4, dist = dist.comb, plot = TRUE, verbose = TRUE)
+## show various graphs/plots
+invisible(readline(prompt = "Press [enter] to get link communities for the network."))
+lc <- getLinkCommunities(graph, hcmethod = "average", edglim = 10^4, dist = dist.comb, plot = TRUE, verbose = TRUE)
 cat("\n")
-print(linkcomm.summary)
+print(lc)
+
+invisible(readline(prompt = "Press [enter] to display community membership for the top 20 nodes that belong to the most communities."))
+plot(lc, type = "members")
+
+invisible(readline(prompt = "Press [enter] to display network with edges coloured according to community membership."))
+plot(lc, type = "graph")
+
+## this may result in "Cluster 1 is not entirely nested in any other clusters."
+invisible(readline(prompt = paste("Press [enter] to find and display a subnetwork where the nodes of one link",
+                       " community are entirely nested within another link community.", sep="")))
+getNestedHierarchies(lc, clusid = 1, plot = TRUE)
+
+invisible(readline(prompt = "Press [enter] to plot the network with a Spencer circle layout."))
+plot(lc, type = "graph", layout="spencer.circle")
+
+invisible(readline(prompt = "Press [enter] to plot Spencer circle for the top-connected node."))
+plot(lc, type = "graph", nodes = "YML007W", layout="spencer.circle", vertex.label.cex=0.8, jitter = 0.2))
+
+invisible(readline(prompt = "Press [enter] to display the top modular networks."))
+plot(lc, type = "commsumm", summary = "mod")
