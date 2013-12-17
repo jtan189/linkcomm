@@ -1,0 +1,14 @@
+amy bob
+amy chris
+amy dana
+bob chris
+bob dana
+bob earl
+chris dana
+dana greg
+earl fred
+earl greg
+earl haley
+fred greg
+fred haley
+greg haley
