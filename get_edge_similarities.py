@@ -56,7 +56,8 @@ def edge_similarities(adj, ea):
     """Get all the edge similarities. Input dict maps nodes to sets of neighbors.
     Output is an edge distance matrix, where (eij,eik) entries correspond to (1-sim).
     """
-    num_edges = len(set([e for (e, _) in ea]) | set([e for (_, e) in ea]))
+    #num_edges = len(set([e for (e, _) in ea]) | set([e for (_, e) in ea]))
+    num_edges = len(ea)
     esim = np.zeros((num_edges, num_edges))
 
     i_adj = dict((n, adj[n] | set([n])) for n in adj)  # node -> inclusive neighbors
@@ -84,7 +85,7 @@ def edge_similarities(adj, ea):
                     print "sim: ", sim, " (dist: ", 1 - sim, ")"
 
                 # populate upper triangle of matrix
-                if i < j:
+                if i > j:
                     esim[int(i)-1, int(j)-1] = 1-sim
                 else:
                     esim[int(j)-1, int(i)-1] = 1-sim
@@ -140,9 +141,7 @@ Output:
     
     if very_verbose:
         verbose = True
-        ue = set([e for (e, _) in edges]) | set([e for (_, e) in edges])
-        print "unique edges: ", ue
-        print "num edges: ", len(ue)
+        print "num edges: ", len(edges)
         print "edges: ", edges
         print "adj: ", adj, "\n"
 
