@@ -1,7 +1,7 @@
 ## parameters
-alpha = 1
+alpha = 0.25
 save.img = TRUE
-use.edge.attr = FALSE
+use.edge.attr = TRUE
 
 ## data input variables
 
@@ -13,10 +13,10 @@ use.edge.attr = FALSE
 ## edge.dist.file <- "ExampleDatasets/dlbp/AuthorMapClean2_edgedist.txt"
 
 ## toy graph
-noname.graph.file <- "ExampleDatasets/toy2/toyGraph.txt"
-graph.file <- "ExampleDatasets/toy2/toyGraph_named.txt"
-edge.attr.file <- "ExampleDatasets/toy2/toyEdgeAttributes.txt"
-edge.dist.file <- "ExampleDatasets/toy2/toyGraph_edgedist.txt"
+noname.graph.file <- "ExampleDatasets/toy3/toyGraph.txt"
+graph.file <- "ExampleDatasets/toy3/toyGraph_named.txt"
+edge.attr.file <- "ExampleDatasets/toy3/toyEdgeAttributes.txt"
+edge.dist.file <- "ExampleDatasets/toy3/toyGraph_edgedist.txt"
 
 dist.attr <- function(edge.attr, e1, e2) {
     ## Return S_ij = | e1 INTERSECT e2 | / |e1 UNION e2 |
@@ -26,12 +26,13 @@ dist.attr <- function(edge.attr, e1, e2) {
 
 if (use.edge.attr) {
     ## run Python script for calculating edge distances
-    system(paste("python2.7 get_edge_similarities.py -w", noname.graph.file, sep=" "))
+    system(paste("python2.7 get_edge_similarities.py -w -o", edge.dist.file, noname.graph.file, sep=" "))
+    dist.edge <- as.matrix(read.table(edge.dist.file))
 }
 
 ## read data
 graph <- as.matrix(read.table(graph.file))
-dist.edge <- as.matrix(read.table(edge.dist.file))
+
 
 if (use.edge.attr) {
     edge.attr <- as.matrix(read.table(edge.attr.file))
@@ -55,14 +56,14 @@ if (use.edge.attr) {
 
 
 ## debug
-cat("graph\n")
-print.default(graph)
-cat("edge attr dist\n")
-print.default(dist.ea)
-cat("edge dist\n")
-print.default(dist.edge)
-cat("dist matrix\n")
-print.default(dist.comb)
+## cat("graph\n")
+## print.default(graph)
+## cat("edge attr dist\n")
+## print.default(dist.ea)
+## cat("edge dist\n")
+## print.default(dist.edge)
+## cat("dist matrix\n")
+## print.default(dist.comb)
 
 if (use.edge.attr) {
     ## convert to dist object
@@ -80,21 +81,21 @@ invisible(readline(prompt = "\nPress [enter] to get link communities for the net
 if (save.img) {
     if (use.edge.attr) {
         png(filename=paste("lc_", alpha, ".png", sep=""))
-        lc <- getLinkCommunities(graph, hcmethod = "ward", dist = dist.comb, plot = TRUE, verbose = TRUE)
-        #lc <- getLinkCommunities(graph, hcmethod = "average", dist = dist.comb, plot = TRUE, verbose = TRUE)
+        ##lc <- getLinkCommunities(graph, hcmethod = "ward", dist = dist.comb, plot = TRUE, verbose = TRUE)
+        lc <- getLinkCommunities(graph, hcmethod = "average", dist = dist.comb, plot = TRUE, verbose = TRUE)
     } else {
         png(filename="lc.png")
-        lc <- getLinkCommunities(graph, hcmethod = "ward", plot = TRUE, verbose = TRUE)
-        #lc <- getLinkCommunities(graph, hcmethod = "average", plot = TRUE, verbose = TRUE)
+        ##lc <- getLinkCommunities(graph, hcmethod = "ward", plot = TRUE, verbose = TRUE)
+        lc <- getLinkCommunities(graph, hcmethod = "average", plot = TRUE, verbose = TRUE)
     }
     dev.off()
 } else {
     if (use.edge.attr) {
-        #lc <- getLinkCommunities(graph, hcmethod = "average", dist = dist.comb, plot = TRUE, verbose = TRUE)
-        lc <- getLinkCommunities(graph, hcmethod = "ward", dist = dist.comb, plot = TRUE, verbose = TRUE)
+        lc <- getLinkCommunities(graph, hcmethod = "average", dist = dist.comb, plot = TRUE, verbose = TRUE)
+        ##lc <- getLinkCommunities(graph, hcmethod = "ward", dist = dist.comb, plot = TRUE, verbose = TRUE)
     } else {
-        #lc <- getLinkCommunities(graph, hcmethod = "average", plot = TRUE, verbose = TRUE)
-        lc <- getLinkCommunities(graph, hcmethod = "ward", plot = TRUE, verbose = TRUE)
+        lc <- getLinkCommunities(graph, hcmethod = "average", plot = TRUE, verbose = TRUE)
+        ##lc <- getLinkCommunities(graph, hcmethod = "ward", plot = TRUE, verbose = TRUE)
     }
 }
 cat("\n")
