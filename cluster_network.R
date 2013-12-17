@@ -1,14 +1,21 @@
 ## parameters
 alpha = 0.25
 
-## input variables
-##graph.file <- "ExampleDatasets/AuthorMapClean2.txt"
-graph.file <- "ExampleDatasets/toyGraph.txt"
-##nodes.attribs.file <- "ExampleDatasets/AuthorNameClean2.txt"
-node.attr.file <- "ExampleDatasets/toyNodeAttributes.txt"
-##edge.attribs.file <- "ExampleDatasets/ConfAttributeClean2.txt"
-edge.attr.file <- "ExampleDatasets/toyEdgeAttributes.txt"
-edge.dist.file <- "ExampleDatasets/toyGraph_edgedist.txt"
+## data input variables
+
+## dblp
+noname.graph.file <- "ExampleDatasets/dblp/AuthorMapClean2.txt"
+graph.file <- "ExampleDatasets/dblp/AuthorMapClean2.txt"
+node.attr.file <- "ExampleDatasets/dblp/AuthorNameClean2.txt"
+edge.attr.file <- "ExampleDatasets/dblp/ConfAttributeClean2.txt"
+edge.dist.file <- "ExampleDatasets/dlbp/AuthorMapClean2_edgedst.txt"
+
+## toy graph
+## noname.graph.file <- "ExampleDatasets/toy/toyGraph.txt"
+## graph.file <- "ExampleDatasets/toy/toyGraph_named.txt"
+## node.attr.file <- "ExampleDatasets/toy/toyNodeAttributes.txt"
+## edge.attr.file <- "ExampleDatasets/toy/toyEdgeAttributes.txt"
+## edge.dist.file <- "ExampleDatasets/toy/toyGraph_edgedist.txt"
 
 dist.attr <- function(edge.attr, e1, e2) {
     ## Return S_ij = | e1 INTERSECT e2 | / |e1 UNION e2 |
@@ -16,9 +23,8 @@ dist.attr <- function(edge.attr, e1, e2) {
     return(1 - sim)
 }
 
-
 ## run Python script for calculating edge distances
-system("python2.7 get_edge_similarities.py ExampleDatasets/toyGraph.txt")
+system(paste("python2.7 get_edge_similarities.py", noname.graph.file, sep=" "))
 
 ## read data
 graph <- as.matrix(read.table(graph.file))
