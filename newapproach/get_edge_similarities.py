@@ -27,11 +27,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import sys, os
-from copy import copy
-from operator import itemgetter
-from heapq import heappush, heappop
+import numpy as np
 from collections import defaultdict
-from itertools import combinations, chain # requires python 2.6+
+from itertools import combinations # requires python 2.6+
 from optparse import OptionParser
 
 def swap(a,b):
@@ -54,53 +52,45 @@ def read_edgelist(filename, delimiter=None, nodetype=str):
             adj[nj].add(ni) # since undirected
     return dict(adj), edges
 
-def edge_similarities(adj):
+def edge_similarities(adj, ea):
     """Get all the edge similarities. Input dict maps nodes to sets of neighbors.
-    Output is a list of decorated edge-pairs, (1-sim,eij,eik), ordered by similarity.
+    Output is an edge distance matrix, where (eij,eik) entries correspond to (1-sim).
     """
-    print "computing similarities..."
-    i_adj = dict( (n,adj[n] | set([n])) for n in adj)  # node -> inclusive neighbors
-    min_heap = [] # elements are (1-sim,eij,eik)
+    num_edges = len(set([e for (e, _) in ea]) | set([e for (_, e) in ea]))
+    esim = np.zeros((num_edges, num_edges))
+
+    i_adj = dict((n, adj[n] | set([n])) for n in adj)  # node -> inclusive neighbors
+
     for n in adj: # n is the shared node
-        print("n: ", n)
+
+        if verbose:
+            print "shared node: ", n
+
         if len(adj[n]) > 1:
             for i,j in combinations(adj[n],2): # all unordered pairs of neighbors
+
                 edge_pair = swap( swap(i,n),swap(j,n) )
                 inc_ns_i,inc_ns_j = i_adj[i],i_adj[j] # inclusive neighbors
-                S = 1.0 * len(inc_ns_i&inc_ns_j) / len(inc_ns_i|inc_ns_j) # Jacc similarity...
 
-                i_index = int(i) - 1
-                j_index = int(j) - 1
-                #print("attrib i: ", i_index, "\n")
-                #print("attrib j: ", j_index, "\n")
-                both_have = 0
-                either_has = 0
-                for attr in range(0, len(ea[0])):
-                    #print("attr: ", attr, "\n")
-                    if ea[i_index][attr] == 1:
-                        if ea[i_index][attr] == ea[j_index][attr]:
-                            both_have = both_have + 1
-                            either_has = either_has + 1
-                        else:
-                            either_has = either_has + 1
-                    else:
-                        if ea[i_index][attr] != ea[j_index][attr]:
-                            either_has = either_has + 1
-                if either_has != 0:
-                    attr_sim = both_have / either_has
-                else:
-                    attri_sim = 0;
+                # compute Jaccard similarity coefficient
+                sim = 1.0 * len(inc_ns_i & inc_ns_j) / len(inc_ns_i | inc_ns_j) 
 
-                #print("attrib similarity: ", attr_sim, "\n")
+                if verbose:
+                    print "i: ", i
+                    print "j: ", j
+                    print "edge pair: ", edge_pair
+                    print "inc_ns_i: ", inc_ns_i
+                    print "inc_ns_j: ", inc_ns_j
+                    print "sim: ", sim, " (dist: ", 1 - sim, ")"
 
-                alpha = 0.25
-                S = (alpha * S) + ((1 - alpha) * attr_sim)
+                esim[int(i)-1, int(j)-1] = 1-sim
 
-                heappush( min_heap, (1-S,edge_pair) )
-    return [ heappop(min_heap) for i in xrange(len(min_heap)) ] # return ordered edge pairs
-
+    if verbose:
+        print
+    return esim
 
 if __name__ == '__main__':
+
     # build option parser:
     class MyParser(OptionParser):
         def format_epilog(self, formatter):
@@ -110,48 +100,25 @@ if __name__ == '__main__':
     description = """The link communities method of Ahn, Bagrow, and Lehmann, Nature, 2010:
     www.nature.com/nature/journal/v466/n7307/full/nature09182.html (doi:10.1038/nature09182)
     """
+
     epilog = """
-    
+
 Input:
-  An edgelist file where each line represents an edge:
+    An unweighted edgelist file where each line represents an edge:
     node_i <delimiter> node_j <newline>
-  if unweighted, or
-    node_i <delimiter> node_j <delimiter> weight_ij <newline>
-  if weighted.
     
 Output: 
-  Three text files with extensions .edge2comm.txt, .comm2edges.txt,
-  and .comm2nodes.txt store the communities.
- 
-  edge2comm, an edge on each line followed by the community
-  id (cid) of the edge's link comm:
-    node_i <delimiter> node_j <delimiter> cid <newline>
-  
-  comm2edges, a list of edges representing one community per line:
-    cid <delimiter> ni,nj <delimiter> nx,ny [...] <newline>
-
-  comm2nodes, a list of nodes representing one community per line:
-    cid <delimiter> ni <delimiter> nj [...] <newline>
-  
-  The output filename contains the threshold at which the dendrogram
-  was cut, if applicable, or the threshold where the maximum
-  partition density was found, and the value of the partition 
-  density.
-  
-  If no threshold was given to cut the dendrogram, a file ending with
-  `_thr_D.txt' is generated, containing the partition density as a
-  function of clustering threshold.
-
-  If the dendrogram option was given, two files are generated. One with
-  `.cid2edge.txt' records the id of each edge and the other one with
-  `.linkage.txt' stores the linkage structure of the hierarchical 
-  clustering. In the linkage file, the edge in the first column is 
-  merged with the one in the second at the similarity value in the 
-  third column.
+    A text file containing the edge distance matrix.
 """
-    parser = MyParser(usage, description=description,epilog=epilog)
+    parser = MyParser(usage, description=description, epilog=epilog)
     parser.add_option("-d", "--delimiter", dest="delimiter", default=" ",
                       help="delimiter of input & output files [default: space]")
+    parser.add_option("-o", "--output", dest="output", default=None,
+                      help="name to use for output file")
+    parser.add_option("-v", "--verbose", action="store_true", dest="verbose", default=False,
+                      help="display verbose messages")
+    parser.add_option("-w", action="store_true", dest="very_verbose", default=False,
+                      help="display very verbose messages")
                     
     # parse options:
     (options, args) = parser.parse_args()
@@ -160,20 +127,32 @@ Output:
     delimiter = options.delimiter
     if delimiter == '\\t':
         delimiter = '\t'
+    verbose = options.verbose
+    very_verbose = options.very_verbose
     
     print "# loading network from edgelist..."
     basename = os.path.splitext(args[0])[0]
     adj,edges = read_edgelist(args[0], delimiter=delimiter)
-    print("edges", edges, "\n")
-    print("adj", adj, "\n")
+    
+    # test
+    if very_verbose:
+        verbose = True
+        ue = set([e for (e, _) in edges]) | set([e for (_, e) in edges])
+        print "unique edges: ", ue
+        print "num edges: ", len(ue)
+        print "edges: ", edges
+        print "adj: ", adj, "\n"
 
     print "# calculating edge similarities..."
-    # edge_sim = edge_similarities(adj, edges)
+    edge_sim = edge_similarities(adj, edges)
 
-    # # write edge similarity matrix to file
-    # filename = "%s_edgesim.txt" % basename
-    # f = open(filename,'w')
-    # for s,D in list_D:
-    #     print >>f, s, D
-    # f.close()
-    # print "# Edge similarity matrix written to %s" % filename
+    # write edge similarity matrix to file
+    print "# writing Jacccard distance matrix to file..."
+
+    if options.output:
+        filename = options.output
+    else:
+        filename = "%s_edgedist.txt" % basename
+
+    np.savetxt(filename, edge_sim, fmt='%-7.5f')
+    print "# Edge distance matrix written to %s" % filename
