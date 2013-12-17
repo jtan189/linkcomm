@@ -37,12 +37,19 @@ def swap(a,b):
         return b,a
     return a,b
 
+def swap_reverse((a, b)):
+    if int(a) < int(b):
+        return b,a
+    return a,b
+
 def read_edgelist(filename, delimiter=None, nodetype=str):
     """reads two-column edgelist, returns dictionary
     mapping node -> set of neighbors and a list of edges
     """
     adj = defaultdict(set) # node to set of neighbors
     edges = set()
+    edge_index_map = {}
+    ind = 0
     for line in open(filename, 'U'):
         L = line.strip().split(delimiter)
         ni,nj = nodetype(L[0]),nodetype(L[1]) # other columns ignored
@@ -50,9 +57,19 @@ def read_edgelist(filename, delimiter=None, nodetype=str):
             edges.add( swap(ni,nj) )
             adj[ni].add(nj)
             adj[nj].add(ni) # since undirected
-    return dict(adj), edges
 
-def edge_similarities(adj, ea):
+        if int(ni) > int(nj):
+            edge_index_map[(ni,nj)] = ind
+        else:
+            edge_index_map[(nj,ni)] = ind
+        ind = ind + 1
+
+    if verbose:
+        print "edge_index_map:\n", edge_index_map        
+
+    return dict(adj), edges, edge_index_map
+
+def edge_similarities(adj, ea, eim):
     """Get all the edge similarities. Input dict maps nodes to sets of neighbors.
     Output is an edge distance matrix, where (eij,eik) entries correspond to (1-sim).
     """
@@ -85,10 +102,17 @@ def edge_similarities(adj, ea):
                     print "sim: ", sim, " (dist: ", 1 - sim, ")"
 
                 # populate upper triangle of matrix
-                if i > j:
-                    esim[int(i)-1, int(j)-1] = 1-sim
+                ei_index = eim[swap_reverse(swap_reverse(edge_pair[0]))]
+                ej_index = eim[swap_reverse(swap_reverse(edge_pair[1]))]
+             
+                if verbose:
+                    print "ei_index: ", ei_index
+                    print "ej_index: ", ej_index
+   
+                if ei_index > ej_index:
+                    esim[ei_index, ej_index] = 1-sim
                 else:
-                    esim[int(j)-1, int(i)-1] = 1-sim
+                    esim[ej_index, ei_index] = 1-sim
 
     if verbose:
         print
@@ -137,16 +161,17 @@ Output:
     
     print "# loading network from edgelist..."
     basename = os.path.splitext(args[0])[0]
-    adj,edges = read_edgelist(args[0], delimiter=delimiter)
+    adj,edges, edge_index_map = read_edgelist(args[0], delimiter=delimiter)
     
     if very_verbose:
         verbose = True
         print "num edges: ", len(edges)
         print "edges: ", edges
         print "adj: ", adj, "\n"
+        print "edge index map: ", edge_index_map, "\n"
 
     print "# calculating edge similarities..."
-    edge_sim = edge_similarities(adj, edges)
+    edge_sim = edge_similarities(adj, edges, edge_index_map)
 
     # write edge similarity matrix to file
     print "# writing Jacccard distance matrix to file..."
