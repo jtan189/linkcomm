@@ -83,7 +83,11 @@ def edge_similarities(adj, ea):
                     print "inc_ns_j: ", inc_ns_j
                     print "sim: ", sim, " (dist: ", 1 - sim, ")"
 
-                esim[int(i)-1, int(j)-1] = 1-sim
+                # populate upper triangle of matrix
+                if i < j:
+                    esim[int(i)-1, int(j)-1] = 1-sim
+                else:
+                    esim[int(j)-1, int(i)-1] = 1-sim
 
     if verbose:
         print
