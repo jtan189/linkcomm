@@ -1,5 +1,5 @@
 ## parameters
-alpha = 0.1
+alpha = 1
 save.img = TRUE
 use.edge.attr = TRUE
 
@@ -13,10 +13,10 @@ use.edge.attr = TRUE
 ## edge.dist.file <- "ExampleDatasets/dlbp/AuthorMapClean2_edgedist.txt"
 
 ## toy graph
-noname.graph.file <- "ExampleDatasets/toy2/toyGraph.txt"
-graph.file <- "ExampleDatasets/toy2/toyGraph_named.txt"
-edge.attr.file <- "ExampleDatasets/toy2/toyEdgeAttributes.txt"
-edge.dist.file <- "ExampleDatasets/toy2/toyGraph_edgedist.txt"
+noname.graph.file <- "ExampleDatasets/toy3/toyGraph.txt"
+graph.file <- "ExampleDatasets/toy3/toyGraph_named.txt"
+edge.attr.file <- "ExampleDatasets/toy3/toyEdgeAttributes.txt"
+edge.dist.file <- "ExampleDatasets/toy3/toyGraph_edgedist.txt"
 
 dist.attr <- function(edge.attr, e1, e2) {
     ## Return S_ij = | e1 INTERSECT e2 | / |e1 UNION e2 |
@@ -26,7 +26,7 @@ dist.attr <- function(edge.attr, e1, e2) {
 
 if (use.edge.attr) {
     ## run Python script for calculating edge distances
-    system(paste("python2.7 get_edge_similarities.py", noname.graph.file, sep=" "))
+    system(paste("python2.7 get_edge_similarities.py -w", noname.graph.file, sep=" "))
 }
 
 ## read data
@@ -39,11 +39,12 @@ if (use.edge.attr) {
     ## populate distance matrix for edge attributes
     num.edges = nrow(edge.attr)
     dist.ea <- matrix(0, num.edges, num.edges)
-    for (i in 1:num.edges) {
-        for (j in i:num.edges) {
-            if (i != j) {
-                dist.ea[j, i] <- dist.attr(edge.attr, i, j)
-            }
+    for (i in 2:num.edges) {
+        for (j in 1:i-1) {
+            dist.ea[i, j] <- dist.attr(edge.attr, i, j)
+            ## if (i != j) {
+            ##     dist.ea[j, i] <- dist.attr(edge.attr, i, j)
+            ## }
         }
     }
 
@@ -54,14 +55,14 @@ if (use.edge.attr) {
 
 
 ## debug
-## cat("graph\n")
-## print.default(graph)
-## cat("edge attr dist\n")
-## print.default(dist.ea)
-## cat("edge dist\n")
-## print.default(dist.edge)
-## cat("dist matrix\n")
-## print.default(dist.comb)
+cat("graph\n")
+print.default(graph)
+cat("edge attr dist\n")
+print.default(dist.ea)
+cat("edge dist\n")
+print.default(dist.edge)
+cat("dist matrix\n")
+print.default(dist.comb)
 
 if (use.edge.attr) {
     ## convert to dist object
@@ -71,8 +72,8 @@ if (use.edge.attr) {
 }
 
 ## debug
-## cat("dist dist\n")
-## print(dist.comb)
+cat("dist dist\n")
+print(dist.comb)
 
 ## show various graphs/plots
 invisible(readline(prompt = "\nPress [enter] to get link communities for the network."))
@@ -152,6 +153,8 @@ if (save.img) {
     plot(lc, type = "graph", layout="spencer.circle")
 }
 
+## for some reason, this usually (always?) fails with an error, so it has
+## moved to the end of this script, in order to allow other plots to succeed
 if (length(lc$clusters) > 1) {
     invisible(readline(prompt = "\nPress [enter] to plot Spencer circle for the top-connected node."))
     if (save.img) {
