@@ -14,9 +14,12 @@ use.edge.attr = TRUE
 
 ## toy graph
 noname.graph.file <- "ExampleDatasets/toy3/toyGraph.txt"
+noname.zero.graph.file <- "ExampleDatasets/toy3/toyGraphZero.txt"
 graph.file <- "ExampleDatasets/toy3/toyGraph_named.txt"
 edge.attr.file <- "ExampleDatasets/toy3/toyEdgeAttributes.txt"
+edge.attr.string.file <- "ExampleDatasets/toy3/toyEdgeAttributeStrings.txt"
 edge.dist.file <- "ExampleDatasets/toy3/toyGraph_edgedist.txt"
+node.attr.file <- "ExampleDatasets/toy3/toyNodeAttributes.txt"
 
 dist.attr <- function(edge.attr, e1, e2) {
     ## Return S_ij = | e1 INTERSECT e2 | / |e1 UNION e2 |
@@ -32,10 +35,11 @@ if (use.edge.attr) {
 
 ## read data
 graph <- as.matrix(read.table(graph.file))
-
-
+node.attr <- as.matrix(read.table(node.attr.file))
+edge.attr <- as.matrix(read.table(edge.attr.file))
+edge.attr.string <- as.matrix(read.table(edge.attr.string.file))
+                   
 if (use.edge.attr) {
-    edge.attr <- as.matrix(read.table(edge.attr.file))
 
     ## populate distance matrix for edge attributes
     num.edges = nrow(edge.attr)
@@ -52,8 +56,6 @@ if (use.edge.attr) {
     ## combine distances for edge attributes with Jaccard distances for edges
     dist.comb = alpha * dist.edge + (1 - alpha) * dist.ea
 }
-
-
 
 ## debug
 ## cat("graph\n")
@@ -77,6 +79,19 @@ cat("dist dist\n")
 print(dist.comb)
 
 ## show various graphs/plots
+orig.graph <- read.graph(noname.zero.graph.file, format="edgelist", directed=FALSE)
+V(orig.graph)$name <- node.attr[, 2]
+E(orig.graph)$label <- edge.attr.string
+
+invisible(readline(prompt = "\nPress [enter] to show original network."))
+if (save.img) {
+    png(filename="orig.png", width = 800, height = 600)
+    plot(orig.graph, edge.label.color="red")
+    dev.off()
+} else {
+    plot(orig.graph, edge.label.color="red")
+}
+
 invisible(readline(prompt = "\nPress [enter] to get link communities for the network."))
 if (save.img) {
     if (use.edge.attr) {
