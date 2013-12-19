@@ -1,0 +1,16 @@
+#+TITLE: Project Report Outline
+
+* Format Requirements
+- Introduction, Background, Experiments on datasets
+- 3-6 pages (plus cover page)
+
+* Introduction
+
+* Related Work
+
+* Algorithms
+
+* Experimental Results
+
+* Conclusions
+

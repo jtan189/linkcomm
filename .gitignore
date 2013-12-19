@@ -3,3 +3,10 @@
 .Rhistory
 *_edgedist.txt
 
+Report/auto
+Report/report.pdf
+*.aux
+*.blg
+*.log
+*.bbl
+
