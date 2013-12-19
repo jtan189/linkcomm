@@ -13,13 +13,13 @@ use.edge.attr = TRUE
 ## edge.dist.file <- "ExampleDatasets/dlbp/AuthorMapClean2_edgedist.txt"
 
 ## toy graph
-noname.graph.file <- "ExampleDatasets/toy3/toyGraph.txt"
-noname.zero.graph.file <- "ExampleDatasets/toy3/toyGraphZero.txt"
-graph.file <- "ExampleDatasets/toy3/toyGraph_named.txt"
-edge.attr.file <- "ExampleDatasets/toy3/toyEdgeAttributes.txt"
-edge.attr.string.file <- "ExampleDatasets/toy3/toyEdgeAttributeStrings.txt"
-edge.dist.file <- "ExampleDatasets/toy3/toyGraph_edgedist.txt"
-node.attr.file <- "ExampleDatasets/toy3/toyNodeAttributes.txt"
+noname.graph.file <- "ExampleDatasets/toy2/toyGraph.txt"
+noname.zero.graph.file <- "ExampleDatasets/toy2/toyGraphZero.txt"
+graph.file <- "ExampleDatasets/toy2/toyGraph_named.txt"
+edge.attr.file <- "ExampleDatasets/toy2/toyEdgeAttributes.txt"
+edge.attr.string.file <- "ExampleDatasets/toy2/toyEdgeAttributeStrings.txt"
+edge.dist.file <- "ExampleDatasets/toy2/toyGraph_edgedist.txt"
+node.attr.file <- "ExampleDatasets/toy2/toyNodeAttributes.txt"
 
 dist.attr <- function(edge.attr, e1, e2) {
     ## Return S_ij = | e1 INTERSECT e2 | / |e1 UNION e2 |
@@ -85,7 +85,7 @@ E(orig.graph)$label <- edge.attr.string
 
 invisible(readline(prompt = "\nPress [enter] to show original network."))
 if (save.img) {
-    png(filename="orig.png", width = 800, height = 600)
+    png(filename="orig.png")
     plot(orig.graph, edge.label.color="red")
     dev.off()
 } else {
