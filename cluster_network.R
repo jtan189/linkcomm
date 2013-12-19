@@ -47,9 +47,6 @@ if (use.edge.attr) {
     for (i in 2:num.edges) {
         for (j in 1:i-1) {
             dist.ea[i, j] <- dist.attr(edge.attr, i, j)
-            ## if (i != j) {
-            ##     dist.ea[j, i] <- dist.attr(edge.attr, i, j)
-            ## }
         }
     }
 
