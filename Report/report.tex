@@ -1,9 +1,11 @@
-\documentclass{report}
+\documentclass{report} % change to article
 
 \usepackage[margin=1in]{geometry}
 \usepackage{url}
 \usepackage{graphicx}
 \usepackage{grffile}
+\usepackage{caption}
+\usepackage{subcaption}
 
 \graphicspath{{../ExampleDatasets/}}
 \DeclareGraphicsExtensions{.png}
@@ -61,114 +63,156 @@ Used a Python script to calculate link similarity between edges (based on linkco
 Used an R script to calculate attribute similarity between edges and combine the two similarity measures based on previous equation.
 Visualization of results was created using existing linkcomm R package (which itself used iGraph).\\
 
-Implementation heavily reused existing stuff\footnote{http://barabasilab.neu.edu/projects/linkcommunities/}. Available as open-source\footnote{https://github.com/jtan189/linkcomm}.
+Implementation heavily reused existing programs\footnote{http://barabasilab.neu.edu/projects/linkcommunities/}. Available as open-source\footnote{https://github.com/jtan189/linkcomm}.
 
 \subsection*{Toy Dataset \#1}
 
 \begin{figure}[htp!]
   \centering
-  \includegraphics[width=0.65\linewidth]{toy2/orig.png}
+  \includegraphics[width=0.55\linewidth]{toy2/orig.png}
   \caption{Original graph for Toy Dataset \#1.}
 \end{figure}
 
-Structural similarity only:
+\begin{figure}
+\centering
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=.8\linewidth]{toy2/no_ea/edge_comm.png}
+  \caption{Using structural similarity only.}
+  \label{fig:sub1}
+\end{subfigure}%
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=.9\linewidth]{toy2/ea/edge_comm_0.1.png}
+  \caption{Using both, 10\% structural.}
+  \label{fig:sub2}
+\end{subfigure}
+\caption{Communities extracted from Toy Dataset \#1.}
+\label{fig:test}
+\end{figure}
+
+% \begin{figure}[htp!]
+%   \centering
+%   \includegraphics[width=0.65\linewidth]{toy2/no_ea/edge_comm.png}
+%   \caption{Communities using structural similarity only.}
+% \end{figure}
+
+% \begin{figure}[htp!]
+%   \centering
+%   \includegraphics[width=0.65\linewidth]{toy2/no_ea/lc.png}
+%   \caption{Link communities dendogram using structural similarity only.}
+% \end{figure}
+
+
+% \begin{figure}[htp!]
+%   \centering
+%   \includegraphics[width=0.65\linewidth]{toy2/ea/edge_comm_0.1.png}
+%   \caption{Communities using both, 10 percent structural.}
+% \end{figure}
 
 \begin{figure}[htp!]
   \centering
-  \includegraphics[width=0.65\linewidth]{toy2/no_ea/edge_comm.png}
-  \caption{Communities using structural similarity only.}
+  \includegraphics[width=0.5\linewidth]{toy2/ea/edge_comm_0.25.png}
+  \caption{Communities for Toy Dataset \#1. Using both, 25\% structural.}
 \end{figure}
 
 \begin{figure}[htp!]
   \centering
-  \includegraphics[width=0.65\linewidth]{toy2/no_ea/lc.png}
-  \caption{Link communities dendogram using structural similarity only.}
-\end{figure}
-
-Structural similarity and edge attribute similarity:
-
-\begin{figure}[htp!]
-  \centering
-  \includegraphics[width=0.65\linewidth]{toy2/ea/edge_comm_0.1.png}
-  \caption{Communities using both, 10 percent structural.}
+  \includegraphics[width=0.6\linewidth]{toy2/ea/lc_0.1.png}
+  \caption{Link communities dendogram for Toy Dataset \#1. Using both, 10\% structural.}
 \end{figure}
 
 \begin{figure}[htp!]
   \centering
-  \includegraphics[width=0.65\linewidth]{toy2/ea/edge_comm_0.25.png}
-  \caption{Communities using both, 25 percent structural.}
+  \includegraphics[width=0.6\linewidth]{toy2/ea/lc_0.25.png}
+  \caption{Link communities dendogram for Toy Dataset \# 1. Using both, 25\% structural.}
 \end{figure}
 
-\begin{figure}[htp!]
+\begin{figure}
+\centering
+\begin{subfigure}{.4\textwidth}
   \centering
-  \includegraphics[width=0.65\linewidth]{toy2/ea/lc_0.1.png}
-  \caption{Link communities dendogram using both, 10 percent structural.}
-\end{figure}
-
-\begin{figure}[htp!]
+  \includegraphics[width=.7\linewidth]{toy2/ea/top20_0.1.png}
+  \caption{Using both, 10\% structural.}
+  \label{fig:sub3}
+\end{subfigure}%
+\begin{subfigure}{.6\textwidth}
   \centering
-  \includegraphics[width=0.65\linewidth]{toy2/ea/lc_0.25.png}
-  \caption{Link communities dendogram using both, 25 percent structural.}
+  \includegraphics[width=.6\linewidth]{toy2/ea/top20_0.25.png}
+  \caption{Using both, 25\% structural.}
+  \label{fig:sub4}
+\end{subfigure}
+\caption{Community membership for Toy Dataset \#1.}
+\label{fig:test2}
 \end{figure}
 
-\begin{figure}[htp!]
-  \centering
-  \includegraphics[width=0.65\linewidth]{toy2/ea/top20_0.1.png}
-  \caption{Community membership using both, 10 percent structural.}
-\end{figure}
+% \begin{figure}[htp!]
+%   \centering
+%   \includegraphics[width=0.65\linewidth]{toy2/ea/top20_0.1.png}
+%   \caption{Community membership using both, 10 percent structural.}
+% \end{figure}
 
-\begin{figure}[htp!]
-  \centering
-  \includegraphics[width=0.65\linewidth]{toy2/ea/top20_0.25.png}
-  \caption{Community membership using both, 25 percent structural.}
-\end{figure}
-
-
-
+% \begin{figure}[htp!]
+%   \centering
+%   \includegraphics[width=0.65\linewidth]{toy2/ea/top20_0.25.png}
+%   \caption{Community membership using both, 25 percent structural.}
+% \end{figure}
 
 \subsection*{Toy Dataset \#2}
 
 \begin{figure}[htp!]
   \centering
-  \includegraphics[width=0.65\linewidth]{toy3/orig.png}
+  \includegraphics[width=0.5\linewidth]{toy3/orig.png}
   \caption{Original graph for toy Dataset \#2.}
 \end{figure}
 
+\begin{figure}
+\centering
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=.8\linewidth]{toy3/no_ea/edge_comm.png}
+  \caption{Using structural similarity only.}
+  \label{fig:sub5}
+\end{subfigure}%
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=.9\linewidth]{toy3/ea/edge_comm_0.25.png}
+  \caption{Using both. Unchanged from 10\% to 90\%.}
+  \label{fig:sub6}
+\end{subfigure}
+\caption{Communities extracted from Toy Dataset \#2.}
+\label{fig:test3}
+\end{figure}
 
-Structural similarity only:
+% \begin{figure}[htp!]
+%   \centering
+%   \includegraphics[width=0.65\linewidth]{toy3/no_ea/edge_comm.png}
+%   \caption{Communities using structural similarity only.}
+% \end{figure}
 
 \begin{figure}[htp!]
   \centering
-  \includegraphics[width=0.65\linewidth]{toy3/no_ea/edge_comm.png}
-  \caption{Communities using structural similarity only.}
+  \includegraphics[width=0.3\linewidth]{toy3/no_ea/top20.png}
+  \caption{Community membership for Toy Dataset \#2. Using structural similarity only.}
 \end{figure}
 
 \begin{figure}[htp!]
   \centering
-  \includegraphics[width=0.65\linewidth]{toy3/no_ea/lc.png}
-  \caption{Link communities dendogram using structural similarity only.}
+  \includegraphics[width=0.6\linewidth]{toy3/no_ea/lc.png}
+  \caption{Link communities dendogram for Toy Dataset \#2. Using structural similarity only.}
 \end{figure}
 
 \begin{figure}[htp!]
   \centering
-  \includegraphics[width=0.65\linewidth]{toy3/no_ea/top20.png}
-  \caption{Community membership using structural similarity only.}
+  \includegraphics[width=0.6\linewidth]{toy3/ea/lc_0.25.png}
+  \caption{Link communities dendogram for Toy Dataset \#2. Using both, 25\% structural.}
 \end{figure}
 
-Structural similarity and edge attribute similarity:
-
-
-\begin{figure}[htp!]
-  \centering
-  \includegraphics[width=0.65\linewidth]{toy3/ea/edge_comm_0.25.png}
-  \caption{Communities using both. Unchanged from 10\% to 90\%.}
-\end{figure}
-
-\begin{figure}[htp!]
-  \centering
-  \includegraphics[width=0.65\linewidth]{toy3/no_ea/lc.png}
-  \caption{Link communities dendogram both, 25\% structural.}
-\end{figure}
+% \begin{figure}[htp!]
+%   \centering
+%   \includegraphics[width=0.65\linewidth]{toy3/ea/edge_comm_0.25.png}
+%   \caption{Communities using both. Unchanged from 10\% to 90\%.}
+% \end{figure}
 
 \section*{Conclusions}
 
